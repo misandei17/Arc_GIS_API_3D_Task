@@ -32,6 +32,14 @@ let rect = new Mesh({
 			19.93534, 50.05371, 250,
 			19.93534, 50.05401, 250,
 		],
+		color: [
+			// R, G, B colors 
+			255, 0, 0, 
+			0, 255, 0, 
+			0, 0, 255, 
+			255, 255, 0, 
+			
+		],
 	},
 
 	// ! Wskazówka, każda powierzchnia jest trójkątna
