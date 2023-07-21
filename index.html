@@ -1,31 +1,133 @@
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<!-- <link
-			rel="stylesheet"
-			href="https://js.arcgis.com/4.27/esri/themes/light/main.css"
-		/> -->
-		<title>Document</title>
-		<style>
-			body {
-				margin: 0;
-				padding: 0;
-			}
-			#viewDiv {
-				padding: 0;
-				margin: 0;
-				height: 90vh;
-				width: 100%;
-			}
-			.esri-ui-inner-container.esri-ui-corner-container {
-				display: none;
-			}
-		</style>
-	</head>
-	<body>
-		<div id="viewDiv"></div>
-	</body>
-	<script type="module" src="./main.js"></script>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Editable 3D Mesh</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.21/esri/themes/light/main.css">
+  <script src="https://js.arcgis.com/4.21/"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #viewDiv {
+      height: 100%;
+      width: 100%;
+    }
+
+    #editButton {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 999;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+  <button id="editButton">Edit</button>
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/SceneView",
+      "esri/geometry/Mesh",
+      "esri/Graphic",
+      "esri/symbols/MeshSymbol3D",
+      "esri/widgets/DirectLineMeasurement3D",
+    ], function (Map, SceneView, Mesh, Graphic, MeshSymbol3D, DirectLineMeasurement3D) {
+      const map = new Map({
+        basemap: "satellite",
+        ground: "world-elevation",
+      });
+
+      const view = new SceneView({
+        container: "viewDiv",
+        map: map,
+        camera: {
+          position: [19.93538, 50.04638, 900],
+          heading: 0,
+          tilt: 50,
+        },
+        qualityProfile: "high",
+      });
+
+      // Mesh object coordinates
+      const meshCoordinates = [
+        19.93455, 50.05371, 230,
+        19.93455, 50.05401, 230,
+        19.93534, 50.05371, 230,
+        19.93534, 50.05401, 230,
+        19.93455, 50.05371, 250,
+        19.93455, 50.05401, 250,
+        19.93534, 50.05371, 250,
+        19.93534, 50.05401, 250,
+      ];
+
+      const rect = new Mesh({
+        vertexAttributes: {
+          position: meshCoordinates,
+        },
+        components: [
+          {
+            faces: [
+              0, 1, 2,
+              2, 1, 3,
+              0, 1, 4,
+              5, 4, 1,
+              0, 2, 6,
+              6, 4, 0,
+              6, 7, 2,
+              7, 3, 2,
+              7, 3, 1,
+              1, 5, 7,
+              5, 4, 6,
+              5, 7, 6,
+            ],
+          },
+        ],
+      });
+
+      const symbol = new MeshSymbol3D({
+        symbolLayers: [{ type: "fill" }],
+      });
+
+      const graphic = new Graphic({
+        geometry: rect,
+        symbol: symbol,
+      });
+
+      view.graphics.add(graphic);
+
+      function enableVertexEditing() {
+        
+        view.ui.removeAll();
+
+       
+        const editWidget = new DirectLineMeasurement3D({
+          view: view,
+        });
+
+        view.ui.add(editWidget, "top-right");
+
+        
+        document.getElementById("editButton").addEventListener("click", function () {
+          view.ui.remove(editWidget);
+          view.ui.add(document.getElementById("editButton"), "top-right");
+        });
+      }
+
+      
+      document.getElementById("editButton").addEventListener("click", function () {
+        enableVertexEditing();
+      });
+    });
+  </script>
+</body>
+
 </html>
