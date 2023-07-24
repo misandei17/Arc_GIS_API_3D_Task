@@ -89,3 +89,81 @@ function waitForElm(selector) {
 waitForElm(".esri-ui.calcite-mode-light").then(() => {
 	document.querySelector(".esri-ui.calcite-mode-light").remove();
 });
+
+let selectedVertexIndex = 0; 
+
+document.getElementById("updateBtn").addEventListener("click", updateVertex);
+
+document.getElementById("x").addEventListener("input", handleInputChange);
+document.getElementById("y").addEventListener("input", handleInputChange);
+document.getElementById("z").addEventListener("input", handleInputChange);
+
+function updateVertex() {
+  const x = parseFloat(document.getElementById("x").value);
+  const y = parseFloat(document.getElementById("y").value);
+  const z = parseFloat(document.getElementById("z").value);
+
+  rect.vertexAttributes.position[selectedVertexIndex * 3] = x;
+  rect.vertexAttributes.position[selectedVertexIndex * 3 + 1] = y;
+  rect.vertexAttributes.position[selectedVertexIndex * 3 + 2] = z;
+  rect.geometryChanged();
+
+  view.graphics.remove(graphic);
+  graphic = new Graphic({
+    geometry: rect,
+    symbol: {
+      type: "mesh-3d",
+      symbolLayers: [{ type: "fill" }],
+    },
+  });
+  view.graphics.add(graphic);
+}
+
+function handleInputChange(event) {
+  const inputId = event.target.id;
+  const inputValue = parseFloat(event.target.value);
+
+  if (inputId === "x") {
+    rect.vertexAttributes.position[selectedVertexIndex * 3] = inputValue;
+  } else if (inputId === "y") {
+    rect.vertexAttributes.position[selectedVertexIndex * 3 + 1] = inputValue;
+  } else if (inputId === "z") {
+    rect.vertexAttributes.position[selectedVertexIndex * 3 + 2] = inputValue;
+  }
+
+  view.graphics.remove(graphic);
+  graphic = new Graphic({
+    geometry: rect,
+    symbol: {
+      type: "mesh-3d",
+      symbolLayers: [{ type: "fill" }],
+    },
+  });
+  view.graphics.add(graphic);
+}
+
+
+
+view.on("click", (event) => {
+  const screenPoint = {
+    x: event.x,
+    y: event.y,
+  };
+
+  
+  view.hitTest(screenPoint).then((response) => {
+    const result = response.results[0];
+    if (result && result.graphic === graphic) {
+      selectedVertexIndex = Math.floor(result.vertexIndex / 4);
+      const selectedColor = [1, 0, 0, 1]; // Red color
+      rect.attributes.color = rect.vertexAttributes.position.map((_, index) =>
+        index === selectedVertexIndex * 3 ? selectedColor[0] : rect.attributes.color[index]
+      );
+      rect.geometryChanged();
+
+      document.getElementById("x").value = rect.vertexAttributes.position[selectedVertexIndex * 3].toFixed(2);
+      document.getElementById("y").value = rect.vertexAttributes.position[selectedVertexIndex * 3 + 1].toFixed(2);
+      document.getElementById("z").value = rect.vertexAttributes.position[selectedVertexIndex * 3 + 2].toFixed(2);
+    }
+  });
+});

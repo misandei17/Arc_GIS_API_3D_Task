@@ -1,31 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<!-- <link
-			rel="stylesheet"
-			href="https://js.arcgis.com/4.27/esri/themes/light/main.css"
-		/> -->
-		<title>Document</title>
-		<style>
-			body {
-				margin: 0;
-				padding: 0;
-			}
-			#viewDiv {
-				padding: 0;
-				margin: 0;
-				height: 90vh;
-				width: 100%;
-			}
-			.esri-ui-inner-container.esri-ui-corner-container {
-				display: none;
-			}
-		</style>
-	</head>
-	<body>
-		<div id="viewDiv"></div>
-	</body>
-	<script type="module" src="./main.js"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://js.arcgis.com/4.27/esri/themes/light/main.css" />
+  <title>Interactive 3D Vertex Editing</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 90vh;
+      width: 100%;
+    }
+    .esri-ui-inner-container.esri-ui-corner-container {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="viewDiv"></div>
+  <div id="uiDiv">
+    <label for="x">X:</label>
+    <input type="number" id="x" />
+    <label for="y">Y:</label>
+    <input type="number" id="y" />
+    <label for="z">Z:</label>
+    <input type="number" id="z" />
+    <button id="updateBtn">Update Vertex</button>
+  </div>
+  <script type="module" src="./main.js"></script>
+</body>
 </html>
